@@ -6,7 +6,7 @@ interface cardProps{
 const Card = ({imageUrl, name}: cardProps) => {
   return (
     <div
-          className={`relative bg-gray-200 rounded-xl overflow-hidden shadow ${"col-span-1 row-span-1"}`}
+          className={`relative bg-mainBackground shadow-md rounded-xl overflow-hidden cursor-pointer transform transition-transform duration-300 md:hover:scale-105 ${"col-span-1 row-span-1"}`}
         >
           <img
             src={imageUrl}

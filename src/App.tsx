@@ -8,7 +8,6 @@ const router = createBrowserRouter(
     <>
        <Route element={<Main />}>
           <Route path="/" element={<Products />} />
-          {/* <Route path="onboarding" element={<Onboarding />} /> */}
        </Route>
     </>,
  ),

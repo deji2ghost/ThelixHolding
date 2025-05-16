@@ -41,7 +41,21 @@ const Products = () => {
   }, [dispatch]);
 
   const handleModal = () => {
-    setOpenModal(!openModal);
+    setOpenModal((prev) => {
+      const next = !prev;
+
+      if (!next) {
+        reset({
+          name: "",
+          price: "",
+          imageUrl: "",
+          category: "all",
+        });
+        setSelectedCategoryValue("");
+      }
+
+      return next;
+    });
   };
   useEffect(() => {
     console.log(selectedCategory);
@@ -68,13 +82,17 @@ const Products = () => {
   const handleSave = async (productData: Product) => {
     try {
       const response = await AxiosInstance.post("/api/products", productData);
-      // const data = await response
-      console.log(response);
-      console.log("save clicked");
       if (response) {
         toast("Product added successfully");
         dispatch(fetchProducts());
         setOpenModal(false);
+        reset({
+          name: "",
+          price: "",
+          imageUrl: "",
+          category: "all",
+        });
+        setSelectedCategoryValue("");
       } else {
         alert(`Failed: an error occured`);
       }
@@ -90,6 +108,7 @@ const Products = () => {
     formState: { errors },
     setValue,
     watch,
+    reset,
   } = useForm({
     defaultValues: {
       name: "",
@@ -104,7 +123,6 @@ const Products = () => {
 
   const onSubmit = (data: Product) => {
     data.category = selectedCategoryValue;
-    console.log(data);
     handleSave(data);
   };
 
@@ -155,6 +173,7 @@ const Products = () => {
     <div>
       <div className="flex items-center justify-between">
         <div>
+          <p>Search for an item here</p>
           <Input type="text" value={searchProduct} onChange={handleSearch} />
         </div>
         <div className="flex gap-2">
@@ -169,29 +188,31 @@ const Products = () => {
           <Button onClick={handleModal}>add products</Button>
         </div>
       </div>
-      <div>
-        <MosaicGrid items={currentItems} />
-      </div>
-      <div className="mt-4 flex gap-2 justify-center">
-        <Button
-          onClick={() => dispatch(setPage(Math.max(currentPage - 1, 1)))}
-          disabled={currentPage === 1}
-          className="px-3 py-1 border rounded disabled:opacity-50"
-        >
-          Previous
-        </Button>
-        <span className="px-2">
-          Page {currentPage} of {totalPages}
-        </span>
-        <Button
-          onClick={() =>
-            dispatch(setPage(Math.min(currentPage + 1, totalPages)))
-          }
-          disabled={currentPage === totalPages}
-          className="px-3 py-1 border rounded disabled:opacity-50"
-        >
-          Next
-        </Button>
+      <div className="flex flex-col justify-between h-screen">
+        <div>
+          <MosaicGrid items={currentItems} />
+        </div>
+        <div className="mt-4 flex gap-2 justify-center">
+          <Button
+            onClick={() => dispatch(setPage(Math.max(currentPage - 1, 1)))}
+            disabled={currentPage === 1}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Previous
+          </Button>
+          <span className="px-2">
+            Page {currentPage} of {totalPages}
+          </span>
+          <Button
+            onClick={() =>
+              dispatch(setPage(Math.min(currentPage + 1, totalPages)))
+            }
+            disabled={currentPage === totalPages}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Next
+          </Button>
+        </div>
       </div>
       <Modal
         Header={"Add new product"}
@@ -276,7 +297,7 @@ const Products = () => {
             </Button>
             <Button
               variant="ghost"
-              onClick={close}
+              onClick={handleModal}
               type="button"
               className="ml-2"
             >

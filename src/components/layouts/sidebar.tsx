@@ -3,11 +3,11 @@ import { Link } from "react-router-dom";
 
 const Sidebar = () => {
   return (
-    <div className="bg-mainBackground flex flex-col gap-2 mt-6">
+    <div className="bg-mainBackground flex flex-col gap-4 mt-6 px-4">
       {
         sideBar.map(item => {
           return(
-            <Link to={item.route} key={item.title}>
+            <Link className="border-y py-3" to={item.route} key={item.title}>
               {item.title}
             </Link>
           )

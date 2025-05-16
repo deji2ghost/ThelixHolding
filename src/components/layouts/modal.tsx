@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 interface modalProps{
     open: boolean, 
     Header: string,
-    body: JSX.Element
+    body: JSX.Element,
 }
 
 const Modal = ({ open, Header, body }: modalProps) => {
