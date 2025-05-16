@@ -8,3 +8,11 @@ export const sideBar = [
         title: "Market Place"
     },
 ]
+
+export const categories = [
+    "all",
+    "computing",
+    "clothes",
+    "shoe",
+    "bag",
+]
