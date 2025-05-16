@@ -2,14 +2,13 @@ import type { ProductsState } from "@/lib/types";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-// Thunk to fetch products
 export const fetchProducts = createAsyncThunk(
   "products/fetchProducts",
   async (_, thunkAPI) => {
     try {
       const response = await axios.get("/api/products");
       console.log(response)
-      return response.data; // return only the data
+      return response.data; 
     } catch (err) {
       if (axios.isAxiosError(err)) {
         return thunkAPI.rejectWithValue(

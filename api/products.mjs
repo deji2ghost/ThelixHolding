@@ -1,8 +1,6 @@
-// File: /api/hello.js
-// File: /api/hello.js
 
-export default function handler(req, res) {
-  const products =[{
+
+const products =[{
       id: 1,
       name: "HP Laptop",
       price: 29.99,
@@ -171,6 +169,37 @@ export default function handler(req, res) {
       category: "bag"
     },
   ];
+// const products =[
+//   {
+//       id: 1,
+//       name: "HP Laptop",
+//       price: 29.99,
+//       imageUrl: "https://images.unsplash.com/photo-1577375729152-4c8b5fcda381?q=80&w=1480&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+//       category: "computing"
+//     },
+// ];
 
-  res.status(200).json(products);
+export default function handler(req, res) {
+  if (req.method === "GET") {
+   return res.status(200).json(products);
+  } else if (req.method === "POST") {
+    const newProduct = req.body;
+
+    if (
+      !newProduct?.name ||
+      !newProduct?.price ||
+      !newProduct?.imageUrl ||
+      !newProduct?.category
+    ) {
+      return res.status(400).json({ message: "Invalid product data" });
+    }
+
+    newProduct.id = products.length + 1;
+    products.push(newProduct);
+
+    return res.status(201).json({ message: "Product added", product: newProduct ,});
+  } else {
+    res.setHeader("Allow", ["GET", "POST"]);
+    res.status(405).end(`Method ${req.method} Not Allowed`);
+  }
 }

@@ -1,8 +1,8 @@
 
 const Header = () => {
   return (
-    <div>
-      <h1>Thelix Holding</h1>
+    <div className="bg-mainBackground px-2 py-3">
+      <h1 className="text-2xl">Thelix Holding</h1>
     </div>
   )
 }

@@ -9,7 +9,7 @@ import type { DropdownProps } from "@/lib/types";
 const DropDown: React.FC<DropdownProps> = ({ selectedCategory, data, changeCategory }) => {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
+      <DropdownMenuTrigger className="w-[100px] border border-greyishBlack p-1 rounded-md">
         {selectedCategory ? selectedCategory : "All"}
       </DropdownMenuTrigger>
       <DropdownMenuContent>

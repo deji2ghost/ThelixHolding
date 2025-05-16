@@ -1,7 +1,7 @@
 export interface Product {
-  id: number;
+  id?: number;
   name: string;
-  price: number;
+  price: number | string;
   imageUrl: string;
   category: string;
 }
@@ -16,4 +16,11 @@ export interface DropdownProps{
     selectedCategory: string, 
     data: string[], 
     changeCategory: (value: string) => void
+}
+
+export interface altProductProp{
+  name: string; 
+  price: number; 
+  imageUrl: string; 
+  category: string;
 }

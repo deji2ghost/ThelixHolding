@@ -8,10 +8,10 @@ const Main = () => {
       <main>
         <Header />
         <section className="flex min-h-screen">
-          <div className="w-[20%] border">
+          <div className="w-[17%] hidden md:block border min-h-screen bg-mainBackground">
             <Sidebar />
           </div>
-          <div className="w-[80%] border bg-[#f9f9f9] min-h-screen relative">
+          <div className="w-full border bg-white min-h-screen relative p-5">
             <Outlet />
           </div>
         </section>
