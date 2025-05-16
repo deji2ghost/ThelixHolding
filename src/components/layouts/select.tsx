@@ -6,25 +6,27 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export interface dataProps{
-    data: string[]
+export interface dataProps {
+  data: string[];
+  value: string;
+  onChange: (value: string) => void;
 }
 
-const select = ({data}: dataProps) => {
+const CustomSelect = ({ data, value, onChange }: dataProps) => {
   return (
-    <Select>
-      <SelectTrigger className="w-[180px]">
+    <Select value={value} onValueChange={onChange}>
+      <SelectTrigger className="w-full py-1">
         <SelectValue placeholder="Select a Category" />
       </SelectTrigger>
       <SelectContent>
-        {
-            data.map(item=> (
-                <SelectItem value="light">{item}</SelectItem>
-            ))
-        }
+        {data.map((item) => (
+          <SelectItem key={item} value={item}>
+            {item}
+          </SelectItem>
+        ))}
       </SelectContent>
     </Select>
   );
 };
 
-export default select;
+export default CustomSelect;

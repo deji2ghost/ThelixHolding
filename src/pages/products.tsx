@@ -1,11 +1,12 @@
 import DropDown from "@/components/layouts/dropDown";
 import Modal from "@/components/layouts/modal";
 import MosaicGrid from "@/components/layouts/mosaic";
+import CustomSelect from "@/components/layouts/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import AxiosInstance from "@/lib/axiosInstance";
-import { categories } from "@/lib/const";
+import { allCategories, categories } from "@/lib/const";
 import type { Product } from "@/lib/types";
 import { useAppDispatch } from "@/store/hook";
 import { resetPage, setPage } from "@/store/pagination";
@@ -16,12 +17,12 @@ import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
 
-
 const CLOUDINARY_UPLOAD_PRESET = "products";
 const CLOUDINARY_CLOUD_NAME = "lazydeji";
 
 const Products = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedCategoryValue, setSelectedCategoryValue] = useState("");
   const [searchProduct, setSearchProduct] = useState("");
   const [openModal, setOpenModal] = useState(false);
 
@@ -83,29 +84,35 @@ const Products = () => {
     }
   };
 
-   const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm({
-      defaultValues: {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+  } = useForm({
+    defaultValues: {
       name: "",
-      price:  "",
+      price: "",
       imageUrl: "",
-      category:  "all",
-      }
-    });
+      category: "all",
+    },
+  });
 
   const [uploading, setUploading] = useState(false);
   const imageUrl = watch("imageUrl");
 
   const onSubmit = (data: Product) => {
-    data.category = selectedCategory;  
-    console.log(data)
+    data.category = selectedCategoryValue;
+    console.log(data);
     handleSave(data);
   };
 
   const uploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-  if (!files || files.length === 0) return; 
+    if (!files || files.length === 0) return;
 
-  const file = files[0];
+    const file = files[0];
     setUploading(true);
 
     const formData = new FormData();
@@ -113,10 +120,13 @@ const Products = () => {
     formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
 
     try {
-      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/upload`, {
-        method: "POST",
-        body: formData,
-      });
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/upload`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
       const json = await res.json();
       if (json.secure_url) {
         setValue("imageUrl", json.secure_url, { shouldValidate: true });
@@ -188,64 +198,91 @@ const Products = () => {
         open={openModal}
         body={
           <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 py-4">
-          <div className="flex flex-col items-center gap-4 items-start">
-            <Label htmlFor="name" className="text-right py-1">Name</Label>
-            <Input
-              id="name"
-              {...register("name", { required: "Name is required" })}
-              className="col-span-3 w-full"
-              aria-invalid={errors.name ? "true" : "false"}
-            />
-          {errors.name && <p className="col-span-4 text-red-600 text-sm">{errors.name.message}</p>}
-          </div>
-
-          <div className="flex flex-col items-center gap-4 items-start">
-            <Label htmlFor="price" className="text-right py-1">Price</Label>
-            <Input
-              id="price"
-              type="number"
-              step="0.01"
-              {...register("price", { 
-                required: "Price is required",
-                valueAsNumber: true,
-                min: { value: 0.01, message: "Price must be positive" }
-              })}
-              className="col-span-3"
-              aria-invalid={errors.price ? "true" : "false"}
-            />
-          {errors.price && <p className="col-span-4 text-red-600 text-sm">{errors.price.message}</p>}
-          </div>
-
-          <div className="flex flex-col items-center gap-4 items-start">
-            <Label htmlFor="image" className="text-right py-1">Image</Label>
-            <input
-              id="image"
-              type="file"
-              accept="image/*"
-              onChange={uploadImage}
-              className="col-span-3 border px-2 py-1 rounded-md w-full"
-            />
-          </div>
-          {uploading && <p className="col-span-4 text-center">Uploading image...</p>}
-          {imageUrl && (
-            <div className="col-span-4 text-center pt-2">
-              <img src={imageUrl} alt="Uploaded" className="mx-auto max-h-40 rounded" />
+            <div className="flex flex-col items-center gap-4 items-start">
+              <Label htmlFor="name" className="text-right py-1">
+                Name
+              </Label>
+              <Input
+                id="name"
+                {...register("name", { required: "Name is required" })}
+                className="col-span-3 w-full"
+                aria-invalid={errors.name ? "true" : "false"}
+              />
+              {errors.name && (
+                <p className="col-span-4 text-red-600 text-sm">
+                  {errors.name.message}
+                </p>
+              )}
             </div>
-          )}
-          <div>
-            <Label className="py-1">select a category</Label>
-            <DropDown data={categories} changeCategory={handleCategoryChange} selectedCategory={selectedCategory}/>
-          </div>
 
-          
+            <div className="flex flex-col items-center gap-4 items-start">
+              <Label htmlFor="price" className="text-right py-1">
+                Price
+              </Label>
+              <Input
+                id="price"
+                type="number"
+                step="0.01"
+                {...register("price", {
+                  required: "Price is required",
+                  valueAsNumber: true,
+                  min: { value: 0.01, message: "Price must be positive" },
+                })}
+                className="col-span-3"
+                aria-invalid={errors.price ? "true" : "false"}
+              />
+              {errors.price && (
+                <p className="col-span-4 text-red-600 text-sm">
+                  {errors.price.message}
+                </p>
+              )}
+            </div>
+
+            <div className="flex flex-col items-center gap-4 items-start">
+              <Label htmlFor="image" className="text-right py-1">
+                Image
+              </Label>
+              <input
+                id="image"
+                type="file"
+                accept="image/*"
+                onChange={uploadImage}
+                className="col-span-3 border px-2 py-1 rounded-md w-full"
+              />
+              {uploading && (
+                <p className="col-span-4 text-center">Uploading image...</p>
+              )}
+              {imageUrl && (
+                <div className="col-span-4 text-center pt-2 h-[30px] w-[30px]">
+                  <img
+                    src={imageUrl}
+                    alt="Uploaded"
+                    className="mx-auto max-h-40 rounded"
+                  />
+                </div>
+              )}
+            </div>
+            <div>
+              <Label className="py-1">select a category</Label>
+              <CustomSelect
+                data={allCategories}
+                value={selectedCategoryValue}
+                onChange={setSelectedCategoryValue}
+              />
+            </div>
+
             <Button type="submit" disabled={uploading}>
-            Add product
+              Add product
             </Button>
-            <Button variant="ghost" onClick={close} type="button" className="ml-2">
+            <Button
+              variant="ghost"
+              onClick={close}
+              type="button"
+              className="ml-2"
+            >
               Cancel
             </Button>
-         
-        </form>
+          </form>
         }
       />
     </div>

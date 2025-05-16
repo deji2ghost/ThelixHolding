@@ -16,3 +16,10 @@ export const categories = [
     "shoe",
     "bag",
 ]
+
+export const allCategories = [
+    "computing",
+    "clothes",
+    "shoe",
+    "bag",
+]
