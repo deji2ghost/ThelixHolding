@@ -29,7 +29,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 const Products = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [selectedCategoryValue, setSelectedCategoryValue] = useState("");
   const [searchProduct, setSearchProduct] = useState("");
   const [uploading, setUploading] = useState(false);
   const openModalState = useSelector((state: RootState) => state.modal.isOpen);
@@ -50,7 +49,6 @@ const Products = () => {
 
   const resetFormState = () => {
     reset({ name: "", price: 0, imageUrl: "", category: "" });
-    setSelectedCategoryValue("");
   };
 
   const handleModal = () => {
@@ -116,7 +114,7 @@ const Products = () => {
   const imageUrl = watch("imageUrl");
 
   const onSubmit = (data: ProductFormData) => {
-    data.category = selectedCategoryValue;
+    console.log(data)
     handleSave(data);
   };
 
