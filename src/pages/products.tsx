@@ -8,8 +8,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import AxiosInstance from "@/lib/axiosInstance";
-import { allCategories, categories } from "@/lib/const";
+import {
+  allCategories,
+  categories,
+  CLOUDINARY_CLOUD_NAME,
+  CLOUDINARY_UPLOAD_PRESET,
+} from "@/lib/const";
 import type { Product } from "@/lib/types";
+import { productSchema, type ProductFormData } from "@/lib/zodSchema";
 import { useAppDispatch } from "@/store/hook";
 import { closeModal, openModal } from "@/store/modal";
 import { resetPage } from "@/store/pagination";
@@ -19,9 +25,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
-
-const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
-const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const Products = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -44,23 +48,19 @@ const Products = () => {
     dispatch(fetchProducts());
   }, [dispatch]);
 
+  const resetFormState = () => {
+    reset({ name: "", price: 0, imageUrl: "", category: "" });
+    setSelectedCategoryValue("");
+  };
+
   const handleModal = () => {
     if (openModalState) {
-    dispatch(closeModal());
-    reset({
-      name: "",
-      price: "",
-      imageUrl: "",
-      category: "all",
-    });
-    setSelectedCategoryValue("");
-  } else {
-    dispatch(openModal());
-  }
+      dispatch(closeModal());
+      resetFormState();
+    } else {
+      dispatch(openModal());
+    }
   };
-  useEffect(() => {
-    console.log(selectedCategory);
-  }, [selectedCategory]);
 
   const filtered = products?.filter((item) => {
     const matchesCategory =
@@ -87,18 +87,12 @@ const Products = () => {
         toast("Product added successfully");
         dispatch(addProduct(response.data.product));
         dispatch(closeModal());
-        reset({
-          name: "",
-          price: "",
-          imageUrl: "",
-          category: "all",
-        });
-        setSelectedCategoryValue("");
+        resetFormState();
       } else {
         toast(`Failed: an error occured`);
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
       toast("Error saving product:");
     }
   };
@@ -110,17 +104,18 @@ const Products = () => {
     setValue,
     watch,
     reset,
-  } = useForm({
+  } = useForm<ProductFormData>({
+    resolver: zodResolver(productSchema),
     defaultValues: {
       name: "",
-      price: "",
+      price: 0,
       imageUrl: "",
-      category: "all",
+      category: "",
     },
   });
   const imageUrl = watch("imageUrl");
 
-  const onSubmit = (data: Product) => {
+  const onSubmit = (data: ProductFormData) => {
     data.category = selectedCategoryValue;
     handleSave(data);
   };
@@ -165,9 +160,12 @@ const Products = () => {
   const currentItems = filtered?.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(filtered?.length / itemsPerPage);
 
-  if (loading) return <div className="">
-    <CustomSkeleton />
-  </div>;
+  if (loading)
+    return (
+      <div className="">
+        <CustomSkeleton />
+      </div>
+    );
   if (error) return <p>Error: {error}</p>;
 
   return (
@@ -196,98 +194,108 @@ const Products = () => {
         <Pagination currentPage={currentPage} totalPages={totalPages} />
       </div>
       {openModalState && (
-      <Modal
-        Header={"Add new product"}
-        open={openModalState}
-        body={
-          <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 py-4">
-            <div className="flex flex-col items-center gap-4 items-start">
-              <Label htmlFor="name" className="text-right py-1">
-                Name
-              </Label>
-              <Input
-                id="name"
-                {...register("name", { required: "Name is required" })}
-                className="col-span-3 w-full"
-                aria-invalid={errors.name ? "true" : "false"}
-              />
-              {errors.name && (
-                <p className="col-span-4 text-red-600 text-sm">
-                  {errors.name.message}
-                </p>
-              )}
-            </div>
+        <Modal
+          Header={"Add new product"}
+          open={openModalState}
+          body={
+            <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 py-4">
+              <div className="flex flex-col items-start">
+                <Label htmlFor="name" className="text-right py-1">
+                  Name
+                </Label>
+                <Input
+                  id="name"
+                  {...register("name", { required: "Name is required" })}
+                  className="col-span-3 w-full"
+                  aria-invalid={errors.name ? "true" : "false"}
+                />
+                {errors.name && (
+                  <p className="col-span-4 text-red text-sm">
+                    {errors.name.message}
+                  </p>
+                )}
+              </div>
 
-            <div className="flex flex-col items-center gap-4 items-start">
-              <Label htmlFor="price" className="text-right py-1">
-                Price
-              </Label>
-              <Input
-                id="price"
-                type="number"
-                step="0.01"
-                {...register("price", {
-                  required: "Price is required",
-                  valueAsNumber: true,
-                  min: { value: 0.01, message: "Price must be positive" },
-                })}
-                className="col-span-3"
-                aria-invalid={errors.price ? "true" : "false"}
-              />
-              {errors.price && (
-                <p className="col-span-4 text-red-600 text-sm">
-                  {errors.price.message}
-                </p>
-              )}
-            </div>
+              <div className="flex flex-col items-start">
+                <Label htmlFor="price" className="text-right py-1">
+                  Price
+                </Label>
+                <Input
+                  id="price"
+                  type="number"
+                  step="0.01"
+                  {...register("price", {
+                    required: "Price is required",
+                    valueAsNumber: true,
+                    min: { value: 0.01, message: "Price must be positive" },
+                  })}
+                  className="no-spinner col-span-3"
+                  aria-invalid={errors.price ? "true" : "false"}
+                />
+                {errors.price && (
+                  <p className="col-span-4 text-red text-sm">
+                    {errors.price.message}
+                  </p>
+                )}
+              </div>
 
-            <div className="flex flex-col items-center gap-4 items-start">
-              <Label htmlFor="image" className="text-right py-1">
-                Image
-              </Label>
-              <input
-                id="image"
-                type="file"
-                accept="image/*"
-                onChange={uploadImage}
-                className="col-span-3 border px-2 py-1 rounded-md w-full"
-              />
-              {uploading && (
-                <p className="col-span-4 text-center">Uploading image...</p>
-              )}
-              {imageUrl && (
-                <div className="col-span-4 text-center pt-2 h-[30px] w-[30px]">
-                  <img
-                    src={imageUrl}
-                    alt="Uploaded"
-                    className="mx-auto max-h-40 rounded"
-                  />
-                </div>
-              )}
-            </div>
-            <div>
-              <Label className="py-1">select a category</Label>
-              <CustomSelect
-                data={allCategories}
-                value={selectedCategoryValue}
-                onChange={setSelectedCategoryValue}
-              />
-            </div>
+              <div className="flex flex-col items-start">
+                <Label htmlFor="image" className="text-right py-1">
+                  Image
+                </Label>
+                <input
+                  id="image"
+                  type="file"
+                  accept="image/*"
+                  onChange={uploadImage}
+                  className="col-span-3 border px-2 py-1 rounded-md w-full"
+                />
+                {uploading && (
+                  <p className="col-span-4 text-center">Uploading image...</p>
+                )}
+                {imageUrl && (
+                  <div className="col-span-4 text-center pt-2 h-[30px] w-[30px]">
+                    <img
+                      src={imageUrl}
+                      alt="Uploaded"
+                      className="mx-auto max-h-40 rounded"
+                    />
+                  </div>
+                )}
+                {errors.imageUrl && (
+                  <p className="text-sm text-red">{errors.imageUrl.message}</p>
+                )}
+              </div>
+              <div className="flex flex-col items-start">
+                <Label className="py-1">select a category</Label>
+                <CustomSelect
+                  data={allCategories}
+                  value={watch("category")}
+                  onChange={(value) =>
+                    setValue("category", value, { shouldValidate: true })
+                  }
+                />
+                {errors.category && (
+                  <p className="text-sm text-red">
+                    {errors.category.message}
+                  </p>
+                )}
+              </div>
 
-            <Button type="submit" disabled={uploading}>
-              Add product
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={handleModal}
-              type="button"
-              className="ml-2 border py-1"
-            >
-              Cancel
-            </Button>
-          </form>
-        }
-      />
+              <Button type="submit" disabled={uploading}>
+                Add product
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={handleModal}
+                type="button"
+                className="ml-2 border py-1"
+              >
+                Cancel
+              </Button>
+            </form>
+          }
+        />
       )}
     </div>
   );
