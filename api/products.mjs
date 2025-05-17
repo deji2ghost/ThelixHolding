@@ -1,6 +1,6 @@
 
 
-const products =[{
+let products =[{
       id: 1,
       name: "HP Laptop",
       price: 29.99,
@@ -169,15 +169,6 @@ const products =[{
       category: "bag"
     },
   ];
-// const products =[
-//   {
-//       id: 1,
-//       name: "HP Laptop",
-//       price: 29.99,
-//       imageUrl: "https://images.unsplash.com/photo-1577375729152-4c8b5fcda381?q=80&w=1480&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-//       category: "computing"
-//     },
-// ];
 
 export default function handler(req, res) {
   if (req.method === "GET") {
@@ -197,7 +188,7 @@ export default function handler(req, res) {
     newProduct.id = products.length + 1;
     products.push(newProduct);
 
-    return res.status(201).json({ message: "Product added", product: newProduct ,});
+    return res.status(201).json({ product: newProduct });
   } else {
     res.setHeader("Allow", ["GET", "POST"]);
     res.status(405).end(`Method ${req.method} Not Allowed`);

@@ -11,7 +11,7 @@ import { allCategories, categories } from "@/lib/const";
 import type { Product } from "@/lib/types";
 import { useAppDispatch } from "@/store/hook";
 import { resetPage, setPage } from "@/store/pagination";
-import { fetchProducts } from "@/store/productsSlice";
+import { addProduct, fetchProducts } from "@/store/productsSlice";
 import type { RootState } from "@/store/store";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -26,6 +26,7 @@ const Products = () => {
   const [selectedCategoryValue, setSelectedCategoryValue] = useState("");
   const [searchProduct, setSearchProduct] = useState("");
   const [openModal, setOpenModal] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const dispatch = useAppDispatch();
   const {
@@ -83,9 +84,13 @@ const Products = () => {
   const handleSave = async (productData: Product) => {
     try {
       const response = await AxiosInstance.post("/api/products", productData);
+      console.log(response)
+      console.log(response)
+      console.log("Added")
       if (response) {
         toast("Product added successfully");
-        dispatch(fetchProducts());
+        dispatch(addProduct(response.data.product));
+        // dispatch(fetchProducts());
         setOpenModal(false);
         reset({
           name: "",
@@ -118,8 +123,6 @@ const Products = () => {
       category: "all",
     },
   });
-
-  const [uploading, setUploading] = useState(false);
   const imageUrl = watch("imageUrl");
 
   const onSubmit = (data: Product) => {
@@ -152,7 +155,7 @@ const Products = () => {
       }
     } catch (error) {
       alert("Failed to upload image");
-      console.error(error);
+      console.log(error);
     }
     setUploading(false);
   };
@@ -174,7 +177,7 @@ const Products = () => {
 
   return (
     <div>
-      <div className="flex flex-col gap-3 md:gap-0 md:flex-row items-center justify-between">
+      <div className="flex flex-col gap-3 md:gap-0 md:flex-row items-center justify-between py-2">
         <div>
           <p>Search for an item here</p>
           <Input type="text" value={searchProduct} onChange={handleSearch} />
@@ -191,8 +194,8 @@ const Products = () => {
           <Button onClick={handleModal}>add products</Button>
         </div>
       </div>
-      <div className="flex flex-col justify-between h-screen">
-        <div>
+      <div className="flex flex-col justify-between">
+        <div className="py-2">
           <MosaicGrid items={currentItems} />
         </div>
         <div className="mt-4 flex gap-2 justify-center">
@@ -302,7 +305,7 @@ const Products = () => {
               variant="ghost"
               onClick={handleModal}
               type="button"
-              className="ml-2"
+              className="ml-2 border"
             >
               Cancel
             </Button>
