@@ -1,3 +1,4 @@
+import AxiosInstance from "@/lib/axiosInstance";
 import type { ProductsState } from "@/lib/types";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
@@ -6,7 +7,7 @@ export const fetchProducts = createAsyncThunk(
   "products/fetchProducts",
   async (_, thunkAPI) => {
     try {
-      const response = await axios.get("/api/products");
+      const response = await AxiosInstance.get("/api/products");
       console.log(response)
       return response.data; 
     } catch (err) {
