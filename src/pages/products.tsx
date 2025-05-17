@@ -26,6 +26,7 @@ import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { generateNumericId } from "@/lib/generateId";
 
 const Products = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -44,8 +45,10 @@ const Products = () => {
   );
 
   useEffect(() => {
-    dispatch(fetchProducts());
     console.log(products)
+  }, [products]);
+  useEffect(() => {
+    dispatch(fetchProducts())
   }, [dispatch]);
 
   const resetFormState = () => {
@@ -106,6 +109,7 @@ const Products = () => {
   } = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
     defaultValues: {
+      id: generateNumericId(),
       name: "",
       price: undefined,
       imageUrl: "",

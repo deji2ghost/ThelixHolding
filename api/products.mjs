@@ -174,20 +174,21 @@ export default function handler(req, res) {
   if (req.method === "GET") {
    return res.status(200).json(products);
   } else if (req.method === "POST") {
-    const newProduct = req.body;
+    const { id, name, price, imageUrl, category } = req.body;
 
-    if (
-      !newProduct?.name ||
-      !newProduct?.price ||
-      !newProduct?.imageUrl ||
-      !newProduct?.category
-    ) {
+    if ( !id || !name || !price || !imageUrl || !category) {
       return res.status(400).json({ message: "Invalid product data" });
     }
 
-    newProduct.id = products.length + 1;
-    products.push(newProduct);
+   const newProduct = {
+      id,
+      name,
+      price,
+      imageUrl,
+      category,
+    };
 
+    products.push(newProduct);
     return res.status(201).json({ product: newProduct });
   } else {
     res.setHeader("Allow", ["GET", "POST"]);
