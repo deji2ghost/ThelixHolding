@@ -174,7 +174,7 @@ const Products = () => {
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 md:gap-0 md:flex-row items-center justify-between">
         <div>
           <p>Search for an item here</p>
           <Input type="text" value={searchProduct} onChange={handleSearch} />

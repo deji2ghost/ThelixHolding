@@ -1,7 +1,7 @@
 import { Skeleton } from "../ui/skeleton";
 
 const CustomSkeleton = () => {
-  const skeletonCount = 4;
+  const skeletonCount = 6;
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
