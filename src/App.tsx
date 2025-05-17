@@ -2,6 +2,7 @@ import './App.css'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
 import Main from './components/layouts/main';
 import Products from './pages/products';
+import { Toaster } from './components/ui/sonner';
 
 const router = createBrowserRouter(
  createRoutesFromElements(
@@ -16,6 +17,7 @@ const router = createBrowserRouter(
 function App() {
   return (
     <div className=''>
+      <Toaster position="top-right" />
       <RouterProvider router={router} />
     </div>
   )

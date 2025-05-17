@@ -84,13 +84,10 @@ const Products = () => {
   const handleSave = async (productData: Product) => {
     try {
       const response = await AxiosInstance.post("/api/products", productData);
-      console.log(response)
-      console.log(response)
-      console.log("Added")
       if (response) {
+        alert("product added succefully")
         toast("Product added successfully");
         dispatch(addProduct(response.data.product));
-        // dispatch(fetchProducts());
         setOpenModal(false);
         reset({
           name: "",
@@ -103,7 +100,7 @@ const Products = () => {
         alert(`Failed: an error occured`);
       }
     } catch (error) {
-      console.error("Error saving product:", error);
+      console.log("Error saving product:", error);
       alert("Something went wrong");
     }
   };
@@ -177,6 +174,7 @@ const Products = () => {
 
   return (
     <div>
+      <Button onClick={() => toast("clicked")}>click</Button>
       <div className="flex flex-col gap-3 md:gap-0 md:flex-row items-center justify-between py-2">
         <div>
           <p>Search for an item here</p>
@@ -194,7 +192,7 @@ const Products = () => {
           <Button onClick={handleModal}>add products</Button>
         </div>
       </div>
-      <div className="flex flex-col justify-between">
+      <div className="flex flex-col justify-between border min-h-screen">
         <div className="py-2">
           <MosaicGrid items={currentItems} />
         </div>
@@ -305,7 +303,7 @@ const Products = () => {
               variant="ghost"
               onClick={handleModal}
               type="button"
-              className="ml-2 border"
+              className="ml-2 border py-1"
             >
               Cancel
             </Button>
