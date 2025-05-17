@@ -84,7 +84,6 @@ const Products = () => {
     try {
       const response = await AxiosInstance.post("/api/products", productData);
       if (response) {
-        alert("product added succefully")
         toast("Product added successfully");
         dispatch(addProduct(response.data.product));
         dispatch(closeModal());
@@ -96,11 +95,11 @@ const Products = () => {
         });
         setSelectedCategoryValue("");
       } else {
-        alert(`Failed: an error occured`);
+        toast(`Failed: an error occured`);
       }
     } catch (error) {
-      console.log("Error saving product:", error);
-      alert("Something went wrong");
+      console.log(error)
+      toast("Error saving product:");
     }
   };
 
