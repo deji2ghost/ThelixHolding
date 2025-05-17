@@ -1,6 +1,7 @@
 import DropDown from "@/components/layouts/dropDown";
 import Modal from "@/components/layouts/modal";
 import MosaicGrid from "@/components/layouts/mosaic";
+import Pagination from "@/components/layouts/pagination";
 import CustomSelect from "@/components/layouts/select";
 import CustomSkeleton from "@/components/layouts/skeleton";
 import { Button } from "@/components/ui/button";
@@ -10,7 +11,8 @@ import AxiosInstance from "@/lib/axiosInstance";
 import { allCategories, categories } from "@/lib/const";
 import type { Product } from "@/lib/types";
 import { useAppDispatch } from "@/store/hook";
-import { resetPage, setPage } from "@/store/pagination";
+import { closeModal, openModal } from "@/store/modal";
+import { resetPage } from "@/store/pagination";
 import { addProduct, fetchProducts } from "@/store/productsSlice";
 import type { RootState } from "@/store/store";
 import { useEffect, useState } from "react";
@@ -25,8 +27,8 @@ const Products = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedCategoryValue, setSelectedCategoryValue] = useState("");
   const [searchProduct, setSearchProduct] = useState("");
-  const [openModal, setOpenModal] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const openModalState = useSelector((state: RootState) => state.modal.isOpen);
 
   const dispatch = useAppDispatch();
   const {
@@ -43,21 +45,18 @@ const Products = () => {
   }, [dispatch]);
 
   const handleModal = () => {
-    setOpenModal((prev) => {
-      const next = !prev;
-
-      if (!next) {
-        reset({
-          name: "",
-          price: "",
-          imageUrl: "",
-          category: "all",
-        });
-        setSelectedCategoryValue("");
-      }
-
-      return next;
+    if (openModalState) {
+    dispatch(closeModal());
+    reset({
+      name: "",
+      price: "",
+      imageUrl: "",
+      category: "all",
     });
+    setSelectedCategoryValue("");
+  } else {
+    dispatch(openModal());
+  }
   };
   useEffect(() => {
     console.log(selectedCategory);
@@ -88,7 +87,7 @@ const Products = () => {
         alert("product added succefully")
         toast("Product added successfully");
         dispatch(addProduct(response.data.product));
-        setOpenModal(false);
+        dispatch(closeModal());
         reset({
           name: "",
           price: "",
@@ -195,32 +194,12 @@ const Products = () => {
         <div className="py-2">
           <MosaicGrid items={currentItems} />
         </div>
-        <div className="mt-4 flex gap-2 justify-center">
-          <Button
-            onClick={() => dispatch(setPage(Math.max(currentPage - 1, 1)))}
-            disabled={currentPage === 1}
-            className="px-3 py-1 border rounded disabled:opacity-50"
-          >
-            Previous
-          </Button>
-          <span className="px-2">
-            Page {currentPage} of {totalPages}
-          </span>
-          <Button
-            onClick={() =>
-              dispatch(setPage(Math.min(currentPage + 1, totalPages)))
-            }
-            disabled={currentPage === totalPages}
-            className="px-3 py-1 border rounded disabled:opacity-50"
-          >
-            Next
-          </Button>
-        </div>
+        <Pagination currentPage={currentPage} totalPages={totalPages} />
       </div>
-      {openModal && (
+      {openModalState && (
       <Modal
         Header={"Add new product"}
-        open={openModal}
+        open={openModalState}
         body={
           <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 py-4">
             <div className="flex flex-col items-center gap-4 items-start">
