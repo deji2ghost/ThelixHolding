@@ -2,6 +2,7 @@ import DropDown from "@/components/layouts/dropDown";
 import Modal from "@/components/layouts/modal";
 import MosaicGrid from "@/components/layouts/mosaic";
 import CustomSelect from "@/components/layouts/select";
+import CustomSkeleton from "@/components/layouts/skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -166,7 +167,9 @@ const Products = () => {
   const currentItems = filtered?.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(filtered?.length / itemsPerPage);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <div className="">
+    <CustomSkeleton />
+  </div>;
   if (error) return <p>Error: {error}</p>;
 
   return (
