@@ -24,7 +24,7 @@ import type { RootState } from "@/store/store";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
-import { toast } from "sonner";
+import { toast } from 'react-toastify';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { generateNumericId } from "@/lib/generateId";
 
@@ -262,11 +262,11 @@ const Products = () => {
                   <p className="col-span-4 text-center">Uploading image...</p>
                 )}
                 {imageUrl && (
-                  <div className="col-span-4 text-center pt-2 h-[30px] w-[30px]">
+                  <div className="col-span-4 overflow-y-hidden text-center py-2 h-[40px] w-[30px]">
                     <img
                       src={imageUrl}
                       alt="Uploaded"
-                      className="mx-auto max-h-40 rounded"
+                      className="mx-auto rounded"
                     />
                   </div>
                 )}
