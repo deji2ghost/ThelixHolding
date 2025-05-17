@@ -17,8 +17,8 @@ import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
 
-const CLOUDINARY_UPLOAD_PRESET = "products";
-const CLOUDINARY_CLOUD_NAME = "lazydeji";
+const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
 
 const Products = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
