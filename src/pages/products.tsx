@@ -174,7 +174,6 @@ const Products = () => {
 
   return (
     <div>
-      <Button onClick={() => toast("clicked")}>click</Button>
       <div className="flex flex-col gap-3 md:gap-0 md:flex-row items-center justify-between py-2">
         <div>
           <p>Search for an item here</p>
