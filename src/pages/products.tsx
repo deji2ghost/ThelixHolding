@@ -45,10 +45,11 @@ const Products = () => {
 
   useEffect(() => {
     dispatch(fetchProducts());
+    console.log(products)
   }, [dispatch]);
 
   const resetFormState = () => {
-    reset({ name: "", price: 0, imageUrl: "", category: "" });
+    reset({ name: "", price: undefined, imageUrl: "", category: "" });
   };
 
   const handleModal = () => {
@@ -106,7 +107,7 @@ const Products = () => {
     resolver: zodResolver(productSchema),
     defaultValues: {
       name: "",
-      price: 0,
+      price: undefined,
       imageUrl: "",
       category: "",
     },
@@ -171,7 +172,7 @@ const Products = () => {
       <div className="flex flex-col gap-3 md:gap-0 md:flex-row items-center justify-between py-2">
         <div>
           <p>Search for an item here</p>
-          <Input type="text" value={searchProduct} onChange={handleSearch} />
+          <Input type="text" placeholder="search product" value={searchProduct} onChange={handleSearch} />
         </div>
         <div className="flex gap-2">
           <div className="flex items-center gap-2">
@@ -203,6 +204,8 @@ const Products = () => {
                 </Label>
                 <Input
                   id="name"
+                  type="text"
+                  placeholder="Enter a name"
                   {...register("name", { required: "Name is required" })}
                   className="col-span-3 w-full"
                   aria-invalid={errors.name ? "true" : "false"}
@@ -221,7 +224,9 @@ const Products = () => {
                 <Input
                   id="price"
                   type="number"
-                  step="0.01"
+                  placeholder="Enter a price"
+  min="0.01"
+  step="0.01"
                   {...register("price", {
                     required: "Price is required",
                     valueAsNumber: true,
@@ -244,6 +249,7 @@ const Products = () => {
                 <input
                   id="image"
                   type="file"
+                  placeholder="choose an image"
                   accept="image/*"
                   onChange={uploadImage}
                   className="col-span-3 border px-2 py-1 rounded-md w-full"
@@ -267,6 +273,7 @@ const Products = () => {
               <div className="flex flex-col items-start">
                 <Label className="py-1">select a category</Label>
                 <CustomSelect
+                placeholder="Select a category"
                   data={allCategories}
                   value={watch("category")}
                   onChange={(value) =>
@@ -280,7 +287,7 @@ const Products = () => {
                 )}
               </div>
 
-              <Button type="submit" disabled={uploading}>
+              <Button type="submit" disabled={uploading || watch("price") <= 0}>
                 Add product
               </Button>
               <Button

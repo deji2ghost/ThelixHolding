@@ -10,13 +10,14 @@ export interface dataProps {
   data: string[];
   value: string;
   onChange: (value: string) => void;
+  placeholder: string
 }
 
-const CustomSelect = ({ data, value, onChange }: dataProps) => {
+const CustomSelect = ({ data, value, onChange, placeholder }: dataProps) => {
   return (
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger className="w-full py-1">
-        <SelectValue placeholder="Select a Category" />
+        <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
         {data.map((item) => (
