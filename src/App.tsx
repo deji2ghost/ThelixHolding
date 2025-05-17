@@ -1,7 +1,8 @@
 import './App.css'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
+import { lazy } from 'react';
 import Main from './components/layouts/main';
-import Products from './pages/products';
+const Products = lazy(() => import("./pages/products"));
 import { Toaster } from './components/ui/sonner';
 
 const router = createBrowserRouter(

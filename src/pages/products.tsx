@@ -191,7 +191,7 @@ const Products = () => {
           <Button onClick={handleModal}>add products</Button>
         </div>
       </div>
-      <div className="flex flex-col justify-between border min-h-screen">
+      <div className="flex flex-col justify-between min-h-screen">
         <div className="py-2">
           <MosaicGrid items={currentItems} />
         </div>
@@ -217,6 +217,7 @@ const Products = () => {
           </Button>
         </div>
       </div>
+      {openModal && (
       <Modal
         Header={"Add new product"}
         open={openModal}
@@ -309,6 +310,7 @@ const Products = () => {
           </form>
         }
       />
+      )}
     </div>
   );
 };
