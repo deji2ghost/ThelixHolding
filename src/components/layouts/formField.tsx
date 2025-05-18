@@ -1,27 +1,28 @@
 import React from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import type { UseFormRegister, FieldValues, RegisterOptions, Path } from "react-hook-form";
 
-interface FormFieldProps {
-  id: string;
+interface FormFieldProps<T extends FieldValues> {
+  id: Path<T>;
   label: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  register: any;
-  validationRules?: object;
+   register?: UseFormRegister<T>;
+  validationRules?: RegisterOptions<T, Path<T>>;
   error?: { message?: string };
   type?: string;
   step?: string;
   className?: string;
+  placeholder?: string;
+  min?: string;
   inputClassName?: string;
-  ariaInvalid?: boolean | string;
-  onChange?: React.ChangeEventHandler<HTMLInputElement>; // For file inputs or custom handlers
-  accept?: string; // For file input accept types
+  ariaInvalid?: boolean;
+  onChange?: React.ChangeEventHandler<HTMLInputElement>;
+  accept?: string;
   isFileInput?: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  value?: any;
+  value?: string | number;
 }
 
-const FormField: React.FC<FormFieldProps> = ({
+const FormField= <T extends FieldValues> ({
   id,
   label,
   register,
@@ -33,18 +34,19 @@ const FormField: React.FC<FormFieldProps> = ({
   inputClassName = "col-span-3 w-full",
   ariaInvalid = false,
   onChange,
+  placeholder,
   accept,
   isFileInput = false,
-  value,
-}) => {
+  min
+}: FormFieldProps<T>) => {
   return (
-    <div className={`flex flex-col items-center gap-4 items-start ${className}`}>
+    <div className={`flex flex-col items-start ${className}`}>
       <Label htmlFor={id} className="text-right py-1">
         {label}
       </Label>
 
       {isFileInput ? (
-        <input
+        <Input
           id={id}
           type="file"
           accept={accept}
@@ -56,15 +58,16 @@ const FormField: React.FC<FormFieldProps> = ({
           id={id}
           type={type}
           step={step}
-          {...register(id, validationRules)}
+          min={min}
+          placeholder={placeholder}
+          {...(register ? register(id, validationRules) : {})}
           className={inputClassName}
           aria-invalid={ariaInvalid}
-          value={value}
         />
       )}
 
       {error && (
-        <p className="col-span-4 text-red-600 text-sm">{error.message}</p>
+        <p className="col-span-4 text-red text-sm">{error.message}</p>
       )}
     </div>
   );

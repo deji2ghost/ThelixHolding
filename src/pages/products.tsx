@@ -24,9 +24,10 @@ import type { RootState } from "@/store/store";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { generateNumericId } from "@/lib/generateId";
+import FormField from "@/components/layouts/formField";
 
 const Products = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -45,14 +46,14 @@ const Products = () => {
   );
 
   useEffect(() => {
-    console.log(products)
+    console.log(products);
   }, [products]);
   useEffect(() => {
-    dispatch(fetchProducts())
+    dispatch(fetchProducts());
   }, [dispatch]);
 
   const resetFormState = () => {
-    reset({ name: "", price: undefined, imageUrl: "", category: "" });
+    reset({ id: generateNumericId(), name: "", price: undefined, imageUrl: "", category: "" });
   };
 
   const handleModal = () => {
@@ -102,7 +103,7 @@ const Products = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     setValue,
     watch,
     reset,
@@ -119,7 +120,9 @@ const Products = () => {
   const imageUrl = watch("imageUrl");
 
   const onSubmit = (data: ProductFormData) => {
-    console.log(data)
+    console.log("clicked")
+    console.log(errors)
+    console.log(data);
     handleSave(data);
   };
 
@@ -176,7 +179,12 @@ const Products = () => {
       <div className="flex flex-col gap-3 md:gap-0 md:flex-row items-center justify-between py-2">
         <div>
           <p>Search for an item here</p>
-          <Input type="text" placeholder="search product" value={searchProduct} onChange={handleSearch} />
+          <Input
+            type="text"
+            placeholder="search product"
+            value={searchProduct}
+            onChange={handleSearch}
+          />
         </div>
         <div className="flex gap-2">
           <div className="flex items-center gap-2">
@@ -198,67 +206,50 @@ const Products = () => {
       </div>
       {openModalState && (
         <Modal
-        MainHeader="Add product"
+          MainHeader="Add product"
           Header={"Add new product"}
           open={openModalState}
           body={
             <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 py-4">
-              <div className="flex flex-col items-start">
-                <Label htmlFor="name" className="text-right py-1">
-                  Name
-                </Label>
-                <Input
-                  id="name"
-                  type="text"
-                  placeholder="Enter a name"
-                  {...register("name", { required: "Name is required" })}
-                  className="col-span-3 w-full"
-                  aria-invalid={errors.name ? "true" : "false"}
-                />
-                {errors.name && (
-                  <p className="col-span-4 text-red text-sm">
-                    {errors.name.message}
-                  </p>
-                )}
-              </div>
+              <FormField
+                id="name"
+                label="Name"
+                type="text"
+                placeholder="Enter a name"
+                error={errors?.name}
+                register={register}
+                validationRules={{ required: "Name is required" }}
+                ariaInvalid={errors.name ? true : false}
+              />
 
-              <div className="flex flex-col items-start">
-                <Label htmlFor="price" className="text-right py-1">
-                  Price
-                </Label>
-                <Input
-                  id="price"
-                  type="number"
-                  placeholder="Enter a price"
-  min="0.01"
-  step="0.01"
-                  {...register("price", {
+              <FormField
+                id="price"
+                type="number"
+                placeholder="Enter a price"
+                min="0.01"
+                step="0.01"
+                error={errors?.price}
+                register={register}
+                validationRules={{
                     required: "Price is required",
                     valueAsNumber: true,
                     min: { value: 0.01, message: "Price must be positive" },
-                  })}
-                  className="no-spinner col-span-3"
-                  aria-invalid={errors.price ? "true" : "false"}
-                />
-                {errors.price && (
-                  <p className="col-span-4 text-red text-sm">
-                    {errors.price.message}
-                  </p>
-                )}
-              </div>
+                  }}
+                  label="Price"
+                ariaInvalid={errors.price ? true : false}
+              />
 
-              <div className="flex flex-col items-start">
-                <Label htmlFor="image" className="text-right py-1">
-                  Image
-                </Label>
-                <input
-                  id="image"
-                  type="file"
-                  placeholder="choose an image"
-                  accept="image/*"
-                  onChange={uploadImage}
-                  className="col-span-3 border px-2 py-1 rounded-md w-full"
-                />
+              <div className="flex flex-col">
+                <FormField
+                isFileInput={true}
+                id="image"
+                label="Image"
+                type="text"
+                placeholder="Choose an image"
+                accept="image/*"
+                onChange={uploadImage}
+                error={errors?.imageUrl}
+              />
                 {uploading && (
                   <p className="col-span-4 text-center">Uploading image...</p>
                 )}
@@ -271,14 +262,11 @@ const Products = () => {
                     />
                   </div>
                 )}
-                {errors.imageUrl && (
-                  <p className="text-sm text-red">{errors.imageUrl.message}</p>
-                )}
               </div>
               <div className="flex flex-col items-start">
                 <Label className="py-1">select a category</Label>
                 <CustomSelect
-                placeholder="Select a category"
+                  placeholder="Select a category"
                   data={allCategories}
                   value={watch("category")}
                   onChange={(value) =>
@@ -286,14 +274,12 @@ const Products = () => {
                   }
                 />
                 {errors.category && (
-                  <p className="text-sm text-red">
-                    {errors.category.message}
-                  </p>
+                  <p className="text-sm text-red">{errors.category.message}</p>
                 )}
               </div>
 
               <Button type="submit" disabled={uploading || watch("price") <= 0}>
-                Add product
+                { isSubmitting ? "Adding..." : "Add product"}
               </Button>
               <Button
                 variant="ghost"
