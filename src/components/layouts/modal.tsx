@@ -6,15 +6,16 @@ interface modalProps{
     open: boolean, 
     Header: string,
     body: JSX.Element,
+    MainHeader: string
 }
 
-const Modal = ({ open, Header, body }: modalProps) => {
+const Modal = ({ open, Header, body, MainHeader }: modalProps) => {
     
   return (
     <Dialog open={open}>
       <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle className="py-3">Add Product</DialogTitle>
+        <DialogHeader className="flex items-center justify-between">
+          <DialogTitle className="py-3">{MainHeader}</DialogTitle>
           <DialogDescription>
             {Header}
           </DialogDescription>

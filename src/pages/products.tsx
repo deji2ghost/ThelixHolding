@@ -198,6 +198,7 @@ const Products = () => {
       </div>
       {openModalState && (
         <Modal
+        MainHeader="Add product"
           Header={"Add new product"}
           open={openModalState}
           body={
